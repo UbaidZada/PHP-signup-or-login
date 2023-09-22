@@ -5,22 +5,38 @@
 <?php
 
 
-if(isset($_POST['submit'])){
 
+$sqlfetch = "SELECT * from student"; 
+
+$fetchprepare = $connection->prepare($sqlfetch);
+
+$fetchprepare->execute();
+$fetch = $fetchprepare->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+if(isset($_POST['submit'])){
+    
     $email = $_POST['email'];
     $password = $_POST['password'];
+    
+    foreach($fetch as $d){
 
-$sqlinsert = "INSERT INTO `student`(`email`, `password`)
- VALUES (:email,:password)"; 
+if($email === $d['email'] && $password == $d['password']){
+        echo "<script>alert('login successfull')</script>";
+        session_start();
+        $_SESSION['email'] = $fetch['email'];
+        header('location:index.php');
 
-$insertprepare = $connection->prepare($sqlinsert);
-$insertprepare->bindParam(':email',$email,PDO::PARAM_STR);
-$insertprepare->bindParam(':password',$password,PDO::PARAM_STR);
+    }else{
 
-$insertprepare->execute();
+        echo "<script>alert('Password and email doesnt match')</script>";
 
 
-header('location:signup.php');
+    }
+    
+    
+    }
 
 }
 
